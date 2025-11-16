@@ -1,0 +1,28 @@
+{
+  "name": "donate-app",
+  "version": "1.0.0",
+  "description": "A donation platform application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "backend": "cd backend && npm start",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend": "npx http-server . -p 3000 -o",
+    "install:all": "npm install && cd backend && npm install",
+    "setup": "npm run install:all && echo 'Setup complete! Run npm run backend to start the server'"
+  },
+  "keywords": ["donation", "charity", "platform"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0",
+    "http-server": "^14.1.1"
+  }
+} 

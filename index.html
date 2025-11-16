@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dona✝e</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div id="globalNotification" style="display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9999;min-width:300px;max-width:90vw;padding:16px 24px;border-radius:8px;font-size:18px;font-weight:bold;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.15);"></div>
+  <header>
+    <h1>Dona✝e</h1>
+    <p>"Take lifetime happiness from kindness."</p>
+    <div id="userProfile" style="display: none; position: absolute; top: 20px; right: 20px; font-weight: bold; color: #2e8b57;">
+      <span id="userName"></span>
+    </div>
+  </header>
+
+  <!-- Navigation Menu (hidden by default) -->
+  <nav id="mainNav" style="display: none; background-color: #2e8b57; padding: 15px; text-align: center; margin-bottom: 20px;">
+    <div class="nav-buttons">
+      <button id="donateButton" class="nav-button">
+        <i class="fas fa-hand-holding-heart"></i> Donate
+      </button>
+      <button id="requestButton" class="nav-button">
+        <i class="fas fa-hands-helping"></i> Request
+      </button>
+      <button id="myDonationsButton" class="nav-button">
+        <i class="fas fa-box-open"></i> My Donations
+      </button>
+      <button id="myRequestsButton" class="nav-button">
+        <i class="fas fa-list"></i> My Requests
+      </button>
+      <button class="nav-button logout-button" id="logoutButton">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <style>
+    .nav-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .nav-button {
+      background-color: white;
+      color: #2e8b57;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-button:hover {
+      background-color: #e8f5e9;
+      transform: translateY(-2px);
+    }
+
+    .nav-button i {
+      font-size: 18px;
+    }
+
+    .logout-button {
+      background-color: #ff4444;
+      color: white;
+    }
+
+    .logout-button:hover {
+      background-color: #cc0000;
+    }
+
+    .form-section {
+      display: none;
+      margin: 20px auto;
+      max-width: 600px;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .map-modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .map-modal-content {
+      background-color: #fefefe;
+      margin: 5% auto; /* 5% from the top and centered */
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%; /* Could be more or less, depending on screen size */
+      max-width: 800px;
+      position: relative;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .map-close-button {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .map-close-button:hover,
+    .map-close-button:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .map-canvas {
+      height: 400px; /* The height of the map */
+      width: 100%; /* The width of the map */
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .map-button,
+    .confirm-button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+
+    .map-button:hover,
+    .confirm-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+
+  <!-- Login Section -->
+  <section class="form-section" id="loginSection" style="display: block;">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" placeholder="Email" name="email" required />
+      <input type="password" placeholder="Password" name="password" required />
+      <button type="submit">Login</button>
+      <p>Don't have an account? <a href="#" id="showRegister">Register here</a></p>
+    </form>
+  </section>
+
+  <!-- Register Section -->
+  <section class="form-section" id="registerSection" style="display: none;">
+    <h2>Register</h2>
+    <form id="registerForm">
+      <input type="text" placeholder="Name" name="name" required />
+      <input type="email" placeholder="Email" name="email" required />
+      <input type="password" placeholder="Password" name="password" required />
+      <button type="submit">Register</button>
+      <p>Already have an account? <a href="#" id="showLogin">Login here</a></p>
+    </form>
+  </section>
+
+  <!-- User Specific Sections -->
+  <section class="form-section" id="donateSection">
+    <h2>Donate an Item</h2>
+    <form id="donateForm">
+      <input type="text" placeholder="Your Name (Optional)" name="donorName" />
+      <input type="tel" placeholder="Phone Number" name="donorPhone" required />
+      <input type="text" placeholder="Address (Street, House No.)" name="donorAddress" required />
+      <input type="text" placeholder="Landmark (Optional)" name="donorLandmark" />
+      <input type="text" placeholder="Town/Village" name="donorTown" required />
+      <input type="text" placeholder="City" name="donorCity" required />
+      <input type="text" placeholder="State" name="donorState" required />
+      <button type="button" id="openMapDonate" class="map-button">Select Address from Map</button>
+      <div id="mapModalDonate" class="map-modal">
+        <div class="map-modal-content">
+          <span class="map-close-button">&times;</span>
+          <div id="mapCanvasDonate" class="map-canvas"></div>
+          <button type="button" id="confirmLocationDonate" class="confirm-button">Confirm Location</button>
+        </div>
+      </div>
+      <select name="category">
+        <option value="">Select Category</option>
+        <option value="Food">Food</option>
+        <option value="Clothes">Clothes</option>
+        <option value="Essentials">Essentials</option>
+        <option value="Old Items">Old Items</option>
+        <option value="Extra Things">Extra Things</option>
+      </select>
+      
+      <!-- Common fields for all categories -->
+      <div id="commonFields" style="display: none;">
+        <textarea placeholder="Description of Item" name="itemDescription" rows="3"></textarea>
+        <input type="file" accept="image/*" name="itemImage" />
+        <input type="date" placeholder="Preferred Pickup Date" name="pickupDate" title="Select your preferred pickup date" />
+        <label for="pickupDate">Preferred Pickup Date</label>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <input type="text" placeholder="Preferred Pickup Time (HH:MM)" name="pickupTime" title="Enter your preferred pickup time in HH:MM format (e.g., 03:30)" />
+          <select name="pickupTimeAmPm">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
+        </div>
+        <label for="pickupTime">Preferred Pickup Time</label>
+        <select name="pickupAddress">
+          <option value="">Select Pickup Address</option>
+          <option value="donorAddress">Use Donor Address</option>
+          <option value="customAddress">Custom Address</option>
+        </select>
+        <div id="customAddressField" style="display: none;">
+          <input type="text" placeholder="Custom Street Address" name="customPickupStreetAddress" />
+          <input type="text" placeholder="Custom Landmark (Optional)" name="customPickupLandmark" />
+          <input type="text" placeholder="Custom Town/Village" name="customPickupTown" />
+          <input type="text" placeholder="Custom City" name="customPickupCity" />
+          <input type="text" placeholder="Custom State" name="customPickupState" />
+          <button type="button" id="openMapCustom" class="map-button">Select Custom Address from Map</button>
+          <div id="mapModalCustom" class="map-modal">
+            <div class="map-modal-content">
+              <span class="map-close-button">&times;</span>
+              <div id="mapCanvasCustom" class="map-canvas"></div>
+              <button type="button" id="confirmLocationCustom" class="confirm-button">Confirm Location</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Food-specific fields -->
+      <div id="foodFields" style="display: none;">
+        <input type="text" placeholder="Type of Food" name="foodType" />
+        <input type="number" placeholder="Quantity (in kg/liters)" name="foodQuantity" />
+        <input type="date" placeholder="Expiry Date" name="expiryDate" />
+      </div>
+      
+      <button type="submit">Donate</button>
+    </form>
+  </section>
+
+  <section class="notifications-section" id="notificationArea">
+    <h2>Notifications</h2>
+    <div id="notifications">
+      <p>No new notifications yet.</p>
+    </div>
+  </section>
+
+  <section class="location-section" id="locationSection">
+    <h2>Share Your Location</h2>
+    <button onclick="getLocation()">Share Location</button>
+    <p id="locationDisplay">Location not shared yet.</p>
+  </section>
+
+  <section class="form-section" id="myDonationsSection" style="display: none;">
+    <h2>My Donations</h2>
+    <div id="donationsList" class="list-container">
+      <p>No donations yet.</p>
+    </div>
+  </section>
+
+  <section class="form-section" id="myRequestsSection" style="display: none;">
+    <h2>My Requests</h2>
+    <div id="requestsList" class="list-container">
+      <p>No requests yet.</p>
+    </div>
+  </section>
+
+  <section class="form-section" id="requestSection">
+    <h2>Request an Item</h2>
+    <form id="requestForm">
+      <input type="text" placeholder="Your Name" name="receiverName" required />
+      <input type="tel" placeholder="Phone Number" name="receiverPhone" required />
+      <input type="text" placeholder="Street Address" name="receiverStreetAddress" required />
+      <input type="text" placeholder="Landmark (Optional)" name="receiverLandmark" />
+      <input type="text" placeholder="Town/Village" name="receiverTown" required />
+      <input type="text" placeholder="City" name="receiverCity" required />
+      <input type="text" placeholder="State" name="receiverState" required />
+      <button type="button" id="openMapRequest" class="map-button">Select Address from Map</button>
+      <div id="mapModalRequest" class="map-modal">
+        <div class="map-modal-content">
+          <span class="map-close-button">&times;</span>
+          <div id="mapCanvasRequest" class="map-canvas"></div>
+          <button type="button" id="confirmLocationRequest" class="confirm-button">Confirm Location</button>
+        </div>
+      </div>
+      <input type="text" placeholder="Wanted Item(s)" name="wantedItems" required />
+      <button type="submit">Request</button>
+    </form>
+  </section>
+
+  <section class="how-to-donate">
+    <h2>How to Donate</h2>
+    <div class="steps-container">
+      <div class="step">
+        <i class="fas fa-utensils step-icon"></i>
+        <h3>Prepare</h3>
+        <p>Ensure your item is properly packaged within time</p>
+      </div>
+      <div class="step">
+        <i class="fas fa-clipboard-list step-icon"></i>
+        <h3>Fill Details</h3>
+        <p>Provide information about the item you are donating</p>
+      </div>
+      <div class="step">
+        <i class="fas fa-truck step-icon"></i>
+        <h3>Schedule Pickup</h3>
+        <p>Choose a convenient time for item collection</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="footer-links">
+    <div class="footer-section">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>Connect With Us</h3>
+      <div class="social-icons">
+        <a href="#" class="social-icon"><i class="fab fa-facebook fa-2x"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-twitter fa-2x"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-instagram fa-2x"></i></a>
+        <a href="#" class="social-icon"><i class="fab fa-linkedin fa-2x"></i></a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Dona✝e</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&libraries=places&callback=initMap">
+  </script>
+
+  <style>
+    .notification-item {
+      background-color: #f8f9fa;
+      border-left: 4px solid #2e8b57;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .notification-item.unread {
+      background-color: #e8f5e9;
+      border-left-color: #4caf50;
+    }
+
+    .notification-item .timestamp {
+      color: #666;
+      font-size: 0.8em;
+      margin-top: 5px;
+    }
+
+    .notification-item .message {
+      margin-bottom: 5px;
+    }
+
+    .notification-item .actions {
+      margin-top: 10px;
+    }
+
+    .notification-item button {
+      background-color: #2e8b57;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .notification-item button:hover {
+      background-color: #246b43;
+    }
+  </style>
+</body>
+</html>
