@@ -1,493 +1,1362 @@
-// DOM elements
+// ===============================
+// DOM ELEMENTS
+// ===============================
+
 const loginSection = document.getElementById('loginSection');
 const registerSection = document.getElementById('registerSection');
 const mainNav = document.getElementById('mainNav');
 const userProfile = document.getElementById('userProfile');
 const userName = document.getElementById('userName');
 
-// Form elements
+// Home page elements
+const howToDonate = document.getElementById('howToDonate');
+const footerLinks = document.getElementById('footerLinks');
+const mainFooter = document.getElementById('mainFooter');
+
+// ===============================
+// FORM ELEMENTS
+// ===============================
+
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const donateForm = document.getElementById('donateForm');
 const requestForm = document.getElementById('requestForm');
 
-// Navigation buttons
+// ===============================
+// NAVIGATION BUTTONS
+// ===============================
+
 const donateButton = document.getElementById('donateButton');
 const requestButton = document.getElementById('requestButton');
 const myDonationsButton = document.getElementById('myDonationsButton');
 const myRequestsButton = document.getElementById('myRequestsButton');
 const logoutButton = document.getElementById('logoutButton');
 
-// Section elements
+// ===============================
+// SECTION ELEMENTS
+// ===============================
+
 const donateSection = document.getElementById('donateSection');
 const requestSection = document.getElementById('requestSection');
 const myDonationsSection = document.getElementById('myDonationsSection');
 const myRequestsSection = document.getElementById('myRequestsSection');
 
-// Links
+// ===============================
+// LINKS
+// ===============================
+
 const showRegisterLink = document.getElementById('showRegister');
 const showLoginLink = document.getElementById('showLogin');
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if user is logged in
+
+// ===============================
+// INITIALIZE APPLICATION
+// ===============================
+
+document.addEventListener('DOMContentLoaded', function () {
+
     const currentUser = localStorage.getItem('currentUser');
+
     if (currentUser) {
-        showLoggedInState(JSON.parse(currentUser));
+        try {
+            showLoggedInState(JSON.parse(currentUser));
+        } catch (error) {
+            console.error("Invalid user data:", error);
+            localStorage.removeItem('currentUser');
+            showLoggedOutState();
+        }
+    } else {
+        showLoggedOutState();
     }
 
-    // Set up event listeners
     setupEventListeners();
 });
 
+
+// ===============================
+// EVENT LISTENERS
+// ===============================
+
 function setupEventListeners() {
-    // Form submissions
+
+    // Login
     if (loginForm) {
         loginForm.addEventListener('submit', handleLogin);
     }
+
+    // Register
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
     }
+
+    // Donate
     if (donateForm) {
         donateForm.addEventListener('submit', handleDonate);
     }
+
+    // Request
     if (requestForm) {
         requestForm.addEventListener('submit', handleRequest);
     }
 
-    // Navigation links
+    // Register link
     if (showRegisterLink) {
-        showRegisterLink.addEventListener('click', showRegister);
-    }
-    if (showLoginLink) {
-        showLoginLink.addEventListener('click', showLogin);
+        showRegisterLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            showRegister();
+        });
     }
 
-    // Navigation buttons
+    // Login link
+    if (showLoginLink) {
+        showLoginLink.addEventListener('click', function (e) {
+            e.preventDefault();
+            showLogin();
+        });
+    }
+
+    // Donate button
     if (donateButton) {
-        donateButton.addEventListener('click', () => showSection(donateSection));
+        donateButton.addEventListener('click', function () {
+            showSection(donateSection);
+        });
     }
+
+    // Request button
     if (requestButton) {
-        requestButton.addEventListener('click', () => showSection(requestSection));
+        requestButton.addEventListener('click', function () {
+            showSection(requestSection);
+        });
     }
+
+    // My Donations
     if (myDonationsButton) {
-        myDonationsButton.addEventListener('click', () => showSection(myDonationsSection));
+        myDonationsButton.addEventListener('click', function () {
+            showSection(myDonationsSection);
+            loadMyDonations();
+        });
     }
+
+    // My Requests
     if (myRequestsButton) {
-        myRequestsButton.addEventListener('click', () => showSection(myRequestsSection));
+        myRequestsButton.addEventListener('click', function () {
+            showSection(myRequestsSection);
+        });
     }
+
+    // Logout
     if (logoutButton) {
         logoutButton.addEventListener('click', handleLogout);
     }
 
-    // Category selection for donate form
+    // Category selection
     const categorySelect = document.querySelector('select[name="category"]');
+
     if (categorySelect) {
         categorySelect.addEventListener('change', handleCategoryChange);
     }
 
     // Pickup address selection
-    const pickupAddressSelect = document.querySelector('select[name="pickupAddress"]');
+    const pickupAddressSelect = document.querySelector(
+        'select[name="pickupAddress"]'
+    );
+
     if (pickupAddressSelect) {
-        pickupAddressSelect.addEventListener('change', handlePickupAddressChange);
+        pickupAddressSelect.addEventListener(
+            'change',
+            handlePickupAddressChange
+        );
     }
 }
 
-// Show/Hide functions
-function showRegister() {
-    loginSection.style.display = 'none';
-    registerSection.style.display = 'block';
+
+// ===============================
+// SHOW HOME PAGE
+// ===============================
+
+function showHomePage() {
+
+    if (howToDonate) {
+        howToDonate.style.display = 'block';
+    }
+
+    if (footerLinks) {
+        footerLinks.style.display = 'block';
+    }
+
+    if (mainFooter) {
+        mainFooter.style.display = 'block';
+    }
 }
+
+
+// ===============================
+// HIDE HOME PAGE
+// ===============================
+
+function hideHomePage() {
+
+    if (howToDonate) {
+        howToDonate.style.display = 'none';
+    }
+
+    if (footerLinks) {
+        footerLinks.style.display = 'none';
+    }
+
+    if (mainFooter) {
+        mainFooter.style.display = 'none';
+    }
+}
+
+
+// ===============================
+// SHOW REGISTER PAGE
+// ===============================
+
+function showRegister() {
+
+    // Hide login
+    if (loginSection) {
+        loginSection.style.display = 'none';
+    }
+
+    // Show register
+    if (registerSection) {
+        registerSection.style.display = 'block';
+    }
+
+    // Hide home
+    hideHomePage();
+
+    // Hide Donate / Request / My sections
+    showSection(null);
+}
+
+
+// ===============================
+// SHOW LOGIN PAGE
+// ===============================
 
 function showLogin() {
-    registerSection.style.display = 'none';
-    loginSection.style.display = 'block';
+
+    // Hide register
+    if (registerSection) {
+        registerSection.style.display = 'none';
+    }
+
+    // Show login
+    if (loginSection) {
+        loginSection.style.display = 'block';
+    }
+
+    // Hide home
+    hideHomePage();
+
+    // Hide Donate / Request / My sections
+    showSection(null);
 }
+
+
+// ===============================
+// LOGGED IN STATE
+// ===============================
 
 function showLoggedInState(user) {
-    // Hide login/register sections
-    loginSection.style.display = 'none';
-    registerSection.style.display = 'none';
-    
-    // Show navigation and user profile
-    mainNav.style.display = 'block';
-    userProfile.style.display = 'block';
-    userName.textContent = user.name;
-    
-    // Show default section (donate)
-    showSection(donateSection);
+
+    // Hide login
+    if (loginSection) {
+        loginSection.style.display = 'none';
+    }
+
+    // Hide register
+    if (registerSection) {
+        registerSection.style.display = 'none';
+    }
+
+    // Show navigation
+    if (mainNav) {
+        mainNav.style.display = 'block';
+    }
+
+    // Show user profile
+    if (userProfile) {
+        userProfile.style.display = 'block';
+    }
+
+    // Show username
+    if (userName && user) {
+        userName.textContent = user.name;
+    }
+
+    // Hide all functional sections
+    showSection(null);
+
+    // Show home page
+    showHomePage();
 }
+
+
+// ===============================
+// LOGGED OUT STATE
+// ===============================
+
+function showLoggedOutState() {
+
+    // Hide navigation
+    if (mainNav) {
+        mainNav.style.display = 'none';
+    }
+
+    // Hide profile
+    if (userProfile) {
+        userProfile.style.display = 'none';
+    }
+
+    // Show login
+    if (loginSection) {
+        loginSection.style.display = 'block';
+    }
+
+    // Hide register
+    if (registerSection) {
+        registerSection.style.display = 'none';
+    }
+
+    // Hide home
+    hideHomePage();
+
+    // Hide functional sections
+    showSection(null);
+}
+
+
+// ===============================
+// SHOW / HIDE FUNCTIONAL SECTIONS
+// ===============================
 
 function showSection(section) {
-    // Hide all sections
-    const sections = [donateSection, requestSection, myDonationsSection, myRequestsSection];
-    sections.forEach(s => {
-        if (s) s.style.display = 'none';
+
+    const sections = [
+        donateSection,
+        requestSection,
+        myDonationsSection,
+        myRequestsSection
+    ];
+
+    // Hide all functional sections
+    sections.forEach(function (s) {
+        if (s) {
+            s.style.display = 'none';
+        }
     });
-    
-    // Show the selected section
+
+    // If a section is selected
     if (section) {
+
+        // Hide home page
+        hideHomePage();
+
+        // Show selected section
         section.style.display = 'block';
+
+    } else {
+
+        // No section selected
+        // Home page can be shown only when user is logged in
+        const currentUser = localStorage.getItem('currentUser');
+
+        if (currentUser) {
+            showHomePage();
+        }
     }
 }
 
-// Form handlers
+
+// ===============================
+// LOGIN HANDLER
+// ===============================
+
 async function handleLogin(e) {
+
     e.preventDefault();
+
     const formData = new FormData(loginForm);
-    const email = formData.get('email');
-    const password = formData.get('password');
+
+    const loginData = {
+        email: formData.get("email"),
+        password: formData.get("password")
+    };
 
     try {
-        // For now, simulate login (replace with actual API call)
-        const user = { name: email.split('@')[0], email: email };
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        showLoggedInState(user);
-        showNotification('Login successful!', 'success');
+
+        const response = await fetch(
+            "http://localhost:5000/api/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(loginData)
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        localStorage.setItem(
+            "currentUser",
+            JSON.stringify(data.user)
+        );
+
+        showLoggedInState(data.user);
+
+        showNotification(
+            "Login successful!",
+            "success"
+        );
+
     } catch (error) {
-        showNotification('Login failed. Please try again.', 'error');
+
+        showNotification(
+            error.message,
+            "error"
+        );
     }
 }
+
+
+// ===============================
+// REGISTER HANDLER
+// ===============================
 
 async function handleRegister(e) {
+
     e.preventDefault();
+
     const formData = new FormData(registerForm);
-    const name = formData.get('name');
-    const email = formData.get('email');
-    const password = formData.get('password');
+
+    const userData = {
+        name: formData.get("name"),
+        email: formData.get("email"),
+        password: formData.get("password")
+    };
 
     try {
-        // For now, simulate registration (replace with actual API call)
-        const user = { name: name, email: email };
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        showLoggedInState(user);
-        showNotification('Registration successful!', 'success');
+
+        const response = await fetch(
+            "http://localhost:5000/api/register",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        localStorage.setItem(
+            "currentUser",
+            JSON.stringify(data.user)
+        );
+
+        showLoggedInState(data.user);
+
+        showNotification(
+            "Registration successful!",
+            "success"
+        );
+
     } catch (error) {
-        showNotification('Registration failed. Please try again.', 'error');
+
+        showNotification(
+            error.message,
+            "error"
+        );
     }
 }
+
+
+// ===============================
+// DONATE HANDLER
+// ===============================
 
 async function handleDonate(e) {
+
     e.preventDefault();
+
     const formData = new FormData(donateForm);
-    
+
+    const currentUser = JSON.parse(
+        localStorage.getItem('currentUser')
+    );
+
+    const donationData = {
+
+        donorName: formData.get('donorName'),
+
+        donorEmail: currentUser
+            ? currentUser.email
+            : "",
+
+        donorPhone: formData.get('donorPhone'),
+
+        donorAddress: formData.get('donorAddress'),
+
+        donorTown: formData.get('donorTown'),
+
+        donorCity: formData.get('donorCity'),
+
+        donorState: formData.get('donorState'),
+
+        category: formData.get('category'),
+
+        itemDescription: formData.get('itemDescription'),
+
+        pickupDate: formData.get('pickupDate'),
+
+        pickupTime: formData.get('pickupTime')
+    };
+
     try {
-        // Validate required fields
-        const requiredFields = ['donorPhone', 'donorAddress', 'donorTown', 'donorCity', 'donorState', 'category'];
-        const missingFields = [];
-        
-        requiredFields.forEach(field => {
-            const value = formData.get(field);
-            if (!value || value.trim() === '') {
-                missingFields.push(field.replace(/([A-Z])/g, ' $1').toLowerCase());
+
+        const response = await fetch(
+            "http://localhost:5000/api/donations",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(donationData)
             }
-        });
-        
-        if (missingFields.length > 0) {
-            showNotification(`Please fill in: ${missingFields.join(', ')}`, 'error');
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        showNotification(
+            "Donation submitted successfully!",
+            "success"
+        );
+
+        donateForm.reset();
+
+    } catch (error) {
+
+        showNotification(
+            error.message,
+            "error"
+        );
+    }
+}
+
+
+// ===============================
+// LOAD MY DONATIONS
+// ===============================
+
+async function loadMyDonations() {
+
+    const currentUser = JSON.parse(
+        localStorage.getItem("currentUser")
+    );
+
+    const donationsList =
+        document.getElementById("donationsList");
+
+    if (!donationsList) {
+        console.error("donationsList element not found");
+        return;
+    }
+
+    if (!currentUser || !currentUser.email) {
+        donationsList.innerHTML =
+            "<p>Please login first.</p>";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `http://localhost:5000/api/donations?email=${encodeURIComponent(currentUser.email)}`
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to fetch donations"
+            );
+        }
+
+        const donations = await response.json();
+
+        if (donations.length === 0) {
+
+            donationsList.innerHTML =
+                "<p>No donations yet.</p>";
+
             return;
         }
-        
-        // For now, simulate donation submission (replace with actual API call)
-        const donationData = {
-            donorName: formData.get('donorName') || 'Anonymous',
-            donorPhone: formData.get('donorPhone'),
-            donorAddress: formData.get('donorAddress'),
-            donorLandmark: formData.get('donorLandmark'),
-            donorTown: formData.get('donorTown'),
-            donorCity: formData.get('donorCity'),
-            donorState: formData.get('donorState'),
-            category: formData.get('category'),
-            itemDescription: formData.get('itemDescription'),
-            pickupDate: formData.get('pickupDate'),
-            pickupTime: formData.get('pickupTime'),
-            pickupTimeAmPm: formData.get('pickupTimeAmPm'),
-            foodType: formData.get('foodType'),
-            foodQuantity: formData.get('foodQuantity'),
-            expiryDate: formData.get('expiryDate')
-        };
-        
-        console.log('Donation data:', donationData);
-        showNotification('Donation submitted successfully! Thank you for your generosity! 🎉', 'success');
-        
-        // Reset form and hide common fields
-        donateForm.reset();
-        const commonFields = document.getElementById('commonFields');
-        const foodFields = document.getElementById('foodFields');
-        if (commonFields) commonFields.style.display = 'none';
-        if (foodFields) foodFields.style.display = 'none';
-        
+
+        donationsList.innerHTML = donations.map(
+            donation => `
+
+            <div class="donation-card">
+
+                <h3>
+                    ${donation.category || "Donation"}
+                </h3>
+
+                <p>
+                    <strong>Item:</strong>
+                    ${donation.itemDescription || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Pickup Date:</strong>
+                    ${donation.pickupDate || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Pickup Time:</strong>
+                    ${donation.pickupTime || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Donor:</strong>
+                    ${donation.donorName || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    ${donation.donorPhone || "N/A"}
+                </p>
+
+                <p>
+                    <strong>Address:</strong>
+                    ${donation.donorAddress || "N/A"}
+                </p>
+
+                <hr>
+
+            </div>
+
+        `
+        ).join("");
+
     } catch (error) {
-        showNotification('Failed to submit donation. Please try again.', 'error');
-        console.error('Donation error:', error);
+
+        console.error(
+            "Error loading donations:",
+            error
+        );
+
+        donationsList.innerHTML =
+            "<p>Unable to load donations.</p>";
     }
 }
+
+
+// ===============================
+// REQUEST HANDLER
+// ===============================
 
 async function handleRequest(e) {
+
     e.preventDefault();
+
     const formData = new FormData(requestForm);
-    
+
+    const requestData = {
+
+        receiverName:
+            formData.get('receiverName'),
+
+        receiverPhone:
+            formData.get('receiverPhone'),
+
+        wantedItems:
+            formData.get('wantedItems')
+    };
+
     try {
-        // For now, simulate request submission (replace with actual API call)
-        const requestData = {
-            receiverName: formData.get('receiverName'),
-            receiverPhone: formData.get('receiverPhone'),
-            wantedItems: formData.get('wantedItems')
-        };
-        
-        console.log('Request data:', requestData);
-        showNotification('Request submitted successfully!', 'success');
+
+        const response = await fetch(
+            "http://localhost:5000/api/requests",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message);
+        }
+
+        showNotification(
+            "Request submitted successfully!",
+            "success"
+        );
+
         requestForm.reset();
+
     } catch (error) {
-        showNotification('Failed to submit request. Please try again.', 'error');
+
+        showNotification(
+            error.message,
+            "error"
+        );
     }
 }
 
+
+// ===============================
+// LOGOUT
+// ===============================
+
 function handleLogout() {
+
     localStorage.removeItem('currentUser');
-    mainNav.style.display = 'none';
-    userProfile.style.display = 'none';
-    loginSection.style.display = 'block';
-    showNotification('Logged out successfully!', 'success');
+
+    // Hide navigation
+    if (mainNav) {
+        mainNav.style.display = 'none';
+    }
+
+    // Hide user profile
+    if (userProfile) {
+        userProfile.style.display = 'none';
+    }
+
+    // Show login page
+    if (loginSection) {
+        loginSection.style.display = 'block';
+    }
+
+    // Hide register
+    if (registerSection) {
+        registerSection.style.display = 'none';
+    }
+
+    // Hide home
+    hideHomePage();
+
+    // Hide all functional sections
+    showSection(null);
+
+    showNotification(
+        'Logged out successfully!',
+        'success'
+    );
 }
 
-// Category change handler
+
+// ===============================
+// CATEGORY CHANGE HANDLER
+// ===============================
+
 function handleCategoryChange(e) {
+
     const category = e.target.value;
-    const commonFields = document.getElementById('commonFields');
-    const foodFields = document.getElementById('foodFields');
-    
+
+    const commonFields =
+        document.getElementById('commonFields');
+
+    const foodFields =
+        document.getElementById('foodFields');
+
     // Hide all category-specific fields
-    if (commonFields) commonFields.style.display = 'none';
-    if (foodFields) foodFields.style.display = 'none';
-    
-    // Show relevant fields based on category
+    if (commonFields) {
+        commonFields.style.display = 'none';
+    }
+
+    if (foodFields) {
+        foodFields.style.display = 'none';
+    }
+
+    // Show common fields
     if (category) {
-        if (commonFields) commonFields.style.display = 'block';
-        
+
+        if (commonFields) {
+            commonFields.style.display = 'block';
+        }
+
+        // Show food fields
         if (category === 'Food') {
-            if (foodFields) foodFields.style.display = 'block';
+
+            if (foodFields) {
+                foodFields.style.display = 'block';
+            }
         }
     }
 }
 
-// Pickup address change handler
+
+// ===============================
+// PICKUP ADDRESS CHANGE HANDLER
+// ===============================
+
 function handlePickupAddressChange(e) {
+
     const pickupAddress = e.target.value;
-    const customAddressField = document.getElementById('customAddressField');
-    
+
+    const customAddressField =
+        document.getElementById('customAddressField');
+
     if (pickupAddress === 'customAddress') {
-        if (customAddressField) customAddressField.style.display = 'block';
+
+        if (customAddressField) {
+            customAddressField.style.display = 'block';
+        }
+
     } else {
-        if (customAddressField) customAddressField.style.display = 'none';
+
+        if (customAddressField) {
+            customAddressField.style.display = 'none';
+        }
     }
 }
 
-// Notification system
-function showNotification(message, type = 'info') {
-    const notifications = document.getElementById('notifications');
-    const globalNotification = document.getElementById('globalNotification');
+
+// ===============================
+// NOTIFICATION SYSTEM
+// ===============================
+
+function showNotification(
+    message,
+    type = 'info'
+) {
+
+    const notifications =
+        document.getElementById('notifications');
+
+    const globalNotification =
+        document.getElementById('globalNotification');
+
     if (globalNotification) {
-        globalNotification.textContent = message;
-        globalNotification.style.display = 'block';
+
+        globalNotification.textContent =
+            message;
+
+        globalNotification.style.display =
+            'block';
+
         globalNotification.style.background =
-            type === 'success' ? '#2e8b57' : type === 'error' ? '#ff4444' : '#333';
-        globalNotification.style.color = 'white';
+            type === 'success'
+                ? '#2e8b57'
+                : type === 'error'
+                    ? '#ff4444'
+                    : '#333';
+
+        globalNotification.style.color =
+            'white';
+
         setTimeout(() => {
-            globalNotification.style.display = 'none';
+
+            globalNotification.style.display =
+                'none';
+
         }, 3500);
     }
-    if (!notifications) return;
-    const notification = document.createElement('div');
-    notification.className = `notification-item ${type}`;
+
+    if (!notifications) {
+        return;
+    }
+
+    const notification =
+        document.createElement('div');
+
+    notification.className =
+        `notification-item ${type}`;
+
     notification.innerHTML = `
-        <div class="message">${message}</div>
-        <div class="timestamp">${new Date().toLocaleTimeString()}</div>
+
+        <div class="message">
+            ${message}
+        </div>
+
+        <div class="timestamp">
+            ${new Date().toLocaleTimeString()}
+        </div>
+
     `;
-    notifications.appendChild(notification);
+
+    notifications.appendChild(
+        notification
+    );
+
     setTimeout(() => {
+
         notification.remove();
+
     }, 5000);
 }
 
-// Location functionality
+
+// ===============================
+// LOCATION FUNCTIONALITY
+// ===============================
+
 function getLocation() {
+
     if (navigator.geolocation) {
+
         navigator.geolocation.getCurrentPosition(
-            function(position) {
-                const locationDisplay = document.getElementById('locationDisplay');
+
+            function (position) {
+
+                const locationDisplay =
+                    document.getElementById(
+                        'locationDisplay'
+                    );
+
                 if (locationDisplay) {
-                    locationDisplay.textContent = `Location: ${position.coords.latitude}, ${position.coords.longitude}`;
+
+                    locationDisplay.textContent =
+                        `Location: ${position.coords.latitude}, ${position.coords.longitude}`;
                 }
-                showNotification('Location shared successfully!', 'success');
+
+                showNotification(
+                    'Location shared successfully!',
+                    'success'
+                );
             },
-            function(error) {
-                showNotification('Error getting location: ' + error.message, 'error');
+
+            function (error) {
+
+                showNotification(
+                    'Error getting location: ' +
+                    error.message,
+                    'error'
+                );
             }
         );
+
     } else {
-        showNotification('Geolocation is not supported by this browser.', 'error');
+
+        showNotification(
+            'Geolocation is not supported by this browser.',
+            'error'
+        );
     }
 }
 
-// Google Maps integration
-let map, marker;
+
+// ===============================
+// GOOGLE MAPS
+// ===============================
+
+let map;
+let marker;
 let currentMapModal = null;
 
+
 function initMap() {
-    console.log('Google Maps API loaded');
-    // Initialize maps for all modals
+
+    console.log(
+        'Google Maps API loaded'
+    );
+
     initializeMapModals();
 }
 
+
 function initializeMapModals() {
-    // Initialize map modals
+
     const mapButtons = [
-        { button: 'openMapDonate', modal: 'mapModalDonate', canvas: 'mapCanvasDonate', confirm: 'confirmLocationDonate' },
-        { button: 'openMapRequest', modal: 'mapModalRequest', canvas: 'mapCanvasRequest', confirm: 'confirmLocationRequest' },
-        { button: 'openMapCustom', modal: 'mapModalCustom', canvas: 'mapCanvasCustom', confirm: 'confirmLocationCustom' }
+
+        {
+            button: 'openMapDonate',
+            modal: 'mapModalDonate',
+            canvas: 'mapCanvasDonate',
+            confirm: 'confirmLocationDonate'
+        },
+
+        {
+            button: 'openMapRequest',
+            modal: 'mapModalRequest',
+            canvas: 'mapCanvasRequest',
+            confirm: 'confirmLocationRequest'
+        },
+
+        {
+            button: 'openMapCustom',
+            modal: 'mapModalCustom',
+            canvas: 'mapCanvasCustom',
+            confirm: 'confirmLocationCustom'
+        }
+
     ];
 
-    mapButtons.forEach(({ button, modal, canvas, confirm }) => {
-        const openButton = document.getElementById(button);
-        const modalElement = document.getElementById(modal);
-        const canvasElement = document.getElementById(canvas);
-        const confirmButton = document.getElementById(confirm);
-        const closeButton = modalElement?.querySelector('.map-close-button');
 
-        if (openButton && modalElement && canvasElement) {
-            openButton.addEventListener('click', () => openMapModal(modalElement, canvasElement));
-            
-            if (closeButton) {
-                closeButton.addEventListener('click', () => closeMapModal(modalElement));
-            }
-            
-            if (confirmButton) {
-                confirmButton.addEventListener('click', () => confirmMapLocation(modalElement));
+    mapButtons.forEach(
+        ({ button, modal, canvas, confirm }) => {
+
+            const openButton =
+                document.getElementById(button);
+
+            const modalElement =
+                document.getElementById(modal);
+
+            const canvasElement =
+                document.getElementById(canvas);
+
+            const confirmButton =
+                document.getElementById(confirm);
+
+            const closeButton =
+                modalElement?.querySelector(
+                    '.map-close-button'
+                );
+
+
+            if (
+                openButton &&
+                modalElement &&
+                canvasElement
+            ) {
+
+                openButton.addEventListener(
+                    'click',
+                    () =>
+                        openMapModal(
+                            modalElement,
+                            canvasElement
+                        )
+                );
+
+
+                if (closeButton) {
+
+                    closeButton.addEventListener(
+                        'click',
+                        () =>
+                            closeMapModal(
+                                modalElement
+                            )
+                    );
+                }
+
+
+                if (confirmButton) {
+
+                    confirmButton.addEventListener(
+                        'click',
+                        () =>
+                            confirmMapLocation(
+                                modalElement
+                            )
+                    );
+                }
             }
         }
-    });
+    );
+
 
     // Close modal when clicking outside
-    window.addEventListener('click', (event) => {
-        const modals = document.querySelectorAll('.map-modal');
-        modals.forEach(modal => {
-            if (event.target === modal) {
-                closeMapModal(modal);
-            }
-        });
-    });
+    window.addEventListener(
+        'click',
+        function (event) {
+
+            const modals =
+                document.querySelectorAll(
+                    '.map-modal'
+                );
+
+            modals.forEach(
+                function (modal) {
+
+                    if (event.target === modal) {
+
+                        closeMapModal(modal);
+                    }
+                }
+            );
+        }
+    );
 }
 
-function openMapModal(modalElement, canvasElement) {
-    currentMapModal = modalElement;
-    modalElement.style.display = 'block';
-    
-    // Initialize map if not already done
+
+function openMapModal(
+    modalElement,
+    canvasElement
+) {
+
+    currentMapModal =
+        modalElement;
+
+    modalElement.style.display =
+        'block';
+
+
     if (!map) {
-        map = new google.maps.Map(canvasElement, {
-            center: { lat: 20.5937, lng: 78.9629 }, // India center
-            zoom: 5
-        });
-        
-        // Add click listener to map
-        map.addListener('click', (event) => {
-            placeMarker(event.latLng);
-        });
+
+        map =
+            new google.maps.Map(
+                canvasElement,
+                {
+                    center: {
+                        lat: 20.5937,
+                        lng: 78.9629
+                    },
+                    zoom: 5
+                }
+            );
+
+
+        map.addListener(
+            'click',
+            function (event) {
+
+                placeMarker(
+                    event.latLng
+                );
+            }
+        );
+
     } else {
-        // Reuse existing map
+
         map.setMap(null);
-        map = new google.maps.Map(canvasElement, {
-            center: { lat: 20.5937, lng: 78.9629 },
-            zoom: 5
-        });
-        
-        map.addListener('click', (event) => {
-            placeMarker(event.latLng);
-        });
+
+        map =
+            new google.maps.Map(
+                canvasElement,
+                {
+                    center: {
+                        lat: 20.5937,
+                        lng: 78.9629
+                    },
+                    zoom: 5
+                }
+            );
+
+
+        map.addListener(
+            'click',
+            function (event) {
+
+                placeMarker(
+                    event.latLng
+                );
+            }
+        );
     }
 }
+
 
 function placeMarker(latLng) {
+
     if (marker) {
+
         marker.setMap(null);
     }
-    
-    marker = new google.maps.Marker({
-        position: latLng,
-        map: map,
-        draggable: true
-    });
-    
-    // Add info window
-    const infoWindow = new google.maps.InfoWindow({
-        content: `Selected Location: ${latLng.lat().toFixed(6)}, ${latLng.lng().toFixed(6)}`
-    });
-    
-    marker.addListener('click', () => {
-        infoWindow.open(map, marker);
-    });
+
+
+    marker =
+        new google.maps.Marker(
+            {
+                position: latLng,
+                map: map,
+                draggable: true
+            }
+        );
+
+
+    const infoWindow =
+        new google.maps.InfoWindow(
+            {
+                content:
+                    `Selected Location: ${latLng.lat().toFixed(6)}, ${latLng.lng().toFixed(6)}`
+            }
+        );
+
+
+    marker.addListener(
+        'click',
+        function () {
+
+            infoWindow.open(
+                map,
+                marker
+            );
+        }
+    );
 }
 
-// In confirmMapLocation, fill a read-only field in the donate form with the coordinates
-function confirmMapLocation(modalElement) {
+
+// ===============================
+// CONFIRM MAP LOCATION
+// ===============================
+
+function confirmMapLocation(
+    modalElement
+) {
+
     if (marker) {
-        const position = marker.getPosition();
-        const lat = position.lat();
-        const lng = position.lng();
-        // Show notification
-        showNotification(`Location selected: ${lat.toFixed(6)}, ${lng.toFixed(6)}`, 'success');
-        // If donate form is visible, fill a read-only field
-        const donateSection = document.getElementById('donateSection');
-        if (donateSection && donateSection.style.display !== 'none') {
-            let coordField = document.getElementById('donateCoords');
+
+        const position =
+            marker.getPosition();
+
+        const lat =
+            position.lat();
+
+        const lng =
+            position.lng();
+
+
+        showNotification(
+            `Location selected: ${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+            'success'
+        );
+
+
+        const donateSection =
+            document.getElementById(
+                'donateSection'
+            );
+
+
+        if (
+            donateSection &&
+            donateSection.style.display !== 'none'
+        ) {
+
+            let coordField =
+                document.getElementById(
+                    'donateCoords'
+                );
+
+
             if (!coordField) {
-                const input = document.createElement('input');
+
+                const input =
+                    document.createElement(
+                        'input'
+                    );
+
                 input.type = 'text';
-                input.id = 'donateCoords';
-                input.name = 'donateCoords';
-                input.readOnly = true;
-                input.style.marginTop = '8px';
-                input.style.background = '#f8f8f8';
-                input.style.border = '1.5px solid #2e8b57';
-                input.style.color = '#2e8b57';
-                input.style.fontWeight = 'bold';
-                input.style.width = '100%';
-                input.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
-                // Insert after the address field
-                const addressField = donateSection.querySelector('input[name="donorAddress"]');
-                if (addressField && addressField.parentNode) {
-                    addressField.parentNode.insertBefore(input, addressField.nextSibling);
+
+                input.id =
+                    'donateCoords';
+
+                input.name =
+                    'donateCoords';
+
+                input.readOnly =
+                    true;
+
+                input.style.marginTop =
+                    '8px';
+
+                input.style.background =
+                    '#f8f8f8';
+
+                input.style.border =
+                    '1.5px solid #2e8b57';
+
+                input.style.color =
+                    '#2e8b57';
+
+                input.style.fontWeight =
+                    'bold';
+
+                input.style.width =
+                    '100%';
+
+                input.value =
+                    `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+
+
+                const addressField =
+                    donateSection.querySelector(
+                        'input[name="donorAddress"]'
+                    );
+
+
+                if (
+                    addressField &&
+                    addressField.parentNode
+                ) {
+
+                    addressField.parentNode.insertBefore(
+                        input,
+                        addressField.nextSibling
+                    );
+
                 } else {
-                    donateSection.appendChild(input);
+
+                    donateSection.appendChild(
+                        input
+                    );
                 }
+
             } else {
-                coordField.value = `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
+
+                coordField.value =
+                    `Lat: ${lat.toFixed(6)}, Lng: ${lng.toFixed(6)}`;
             }
         }
-        closeMapModal(modalElement);
+
+
+        closeMapModal(
+            modalElement
+        );
+
     } else {
-        showNotification('Please select a location on the map first', 'error');
+
+        showNotification(
+            'Please select a location on the map first',
+            'error'
+        );
     }
 }
 
-function closeMapModal(modalElement) {
-    modalElement.style.display = 'none';
-    currentMapModal = null;
+
+// ===============================
+// CLOSE MAP MODAL
+// ===============================
+
+function closeMapModal(
+    modalElement
+) {
+
+    modalElement.style.display =
+        'none';
+
+    currentMapModal =
+        null;
 }
 
-// Utility functions
+
+// ===============================
+// UTILITY FUNCTIONS
+// ===============================
+
 function formatDate(date) {
-    return new Date(date).toLocaleDateString();
+
+    return new Date(
+        date
+    ).toLocaleDateString();
 }
+
 
 function formatTime(time) {
+
     return time;
 }
-
-// Initialize when DOM is loaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupEventListeners);
-} else {
-    setupEventListeners();
-} 

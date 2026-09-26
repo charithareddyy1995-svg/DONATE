@@ -175,7 +175,7 @@
   </section>
 
   <!-- User Specific Sections -->
-  <section class="form-section" id="donateSection">
+  <section class="form-section" id="donateSection" style="display: none;">
     <h2>Donate an Item</h2>
     <form id="donateForm">
       <input type="text" placeholder="Your Name (Optional)" name="donorName" />
@@ -249,18 +249,6 @@
     </form>
   </section>
 
-  <section class="notifications-section" id="notificationArea">
-    <h2>Notifications</h2>
-    <div id="notifications">
-      <p>No new notifications yet.</p>
-    </div>
-  </section>
-
-  <section class="location-section" id="locationSection">
-    <h2>Share Your Location</h2>
-    <button onclick="getLocation()">Share Location</button>
-    <p id="locationDisplay">Location not shared yet.</p>
-  </section>
 
   <section class="form-section" id="myDonationsSection" style="display: none;">
     <h2>My Donations</h2>
@@ -276,7 +264,7 @@
     </div>
   </section>
 
-  <section class="form-section" id="requestSection">
+  <section class="form-section" id="requestSection" style="display: none;">
     <h2>Request an Item</h2>
     <form id="requestForm">
       <input type="text" placeholder="Your Name" name="receiverName" required />
@@ -299,7 +287,7 @@
     </form>
   </section>
 
-  <section class="how-to-donate">
+  <section class="how-to-donate" id="howToDonate" style="display: none;">
     <h2>How to Donate</h2>
     <div class="steps-container">
       <div class="step">
@@ -320,7 +308,7 @@
     </div>
   </section>
 
-  <section class="footer-links">
+  <section class="footer-links" id="footerLinks" style="display: none;"></section>
     <div class="footer-section">
       <h3>Quick Links</h3>
       <ul>
@@ -341,7 +329,7 @@
     </div>
   </section>
 
-  <footer>
+  <footer id="mainFooter" style="display: none;">
     <p>&copy; 2025 Dona✝e</p>
   </footer>
 
