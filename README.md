@@ -71,8 +71,6 @@ The project focuses on building a practical end-to-end application with:
 
 ## 🖥️ Project Screenshots
 
-> Screenshots below will be replaced with actual project outputs from the deployed/running application.
-
 ### Login / Registration
 
 ![Login and Registration](screenshots/login-register.png)
@@ -200,7 +198,6 @@ Donae/
 └── README.md
 ```
 
-> Update the folder structure above to match the final repository structure before publishing the README.
 
 ---
 
